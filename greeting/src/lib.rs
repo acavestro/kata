@@ -1,18 +1,27 @@
 pub fn greet(name: Vec<String>) -> String {
-    let first = name.first();
-    let second = if name.len() == 2 { name.last() } else { None };
-    match (first, second) {
-        (Some(first_name), None) => {
-            if *first_name == first_name.to_uppercase() {
-                format!("HELLO {}!", first_name)
-            } else {
-                format!("Hello, {}.", first_name)
-            }
+    if name.len() == 0 {
+        String::from("Hello, my friend.")
+    } else if name.len() == 1 {
+        let first_name = name.get(0).unwrap();
+        if *first_name == first_name.to_uppercase() {
+            format!("HELLO {}!", first_name)
+        } else {
+            format!("Hello, {}.", first_name)
         }
-        (Some(first_name), Some(second_name)) => {
-            format!("Hello, {} and {}.", first_name, second_name)
+    } else {
+        let mut multiple_names_list = name.clone();
+        let mut first_part = multiple_names_list
+            .splice(0..(name.len() - 1), vec![])
+            .collect::<Vec<String>>()
+            .join(", ");
+        if (name.len() - 1) > 1 {
+            first_part = format!("{},", first_part);
         }
-        _ => String::from("Hello, my friend."),
+        format!(
+            "Hello, {} and {}.",
+            first_part,
+            multiple_names_list.pop().unwrap()
+        )
     }
 }
 
@@ -42,5 +51,15 @@ mod tests {
     fn requirement_4() {
         let result = greet(vec![String::from("Jill"), String::from("Jane")]);
         assert_eq!(result, String::from("Hello, Jill and Jane."));
+    }
+
+    #[test]
+    fn requirement_5() {
+        let result = greet(vec![
+            String::from("Amy"),
+            String::from("Brian"),
+            String::from("Charlotte"),
+        ]);
+        assert_eq!(result, String::from("Hello, Amy, Brian, and Charlotte."));
     }
 }
